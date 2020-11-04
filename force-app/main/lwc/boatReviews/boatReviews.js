@@ -2,7 +2,7 @@ import { NavigationMixin } from 'lightning/navigation';
 import { LightningElement, api } from 'lwc';
 import getAllReviews from '@salesforce/apex/BoatDataService.getAllReviews';
 
-export default class BoatReviews extends NavigationMixin(LightningElement) {
+export default class boatReviews extends NavigationMixin(LightningElement) {
     boatId;
     error = undefined;
     boatReviews = null;

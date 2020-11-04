@@ -11,7 +11,7 @@ const LONGITUDE_FIELD = 'Boat__c.Geolocation__Longitude__s';
 const LATITUDE_FIELD = 'Boat__c.Geolocation__Latitude__s';
 const BOAT_FIELDS = [LONGITUDE_FIELD, LATITUDE_FIELD];
 
-export default class BoatMap extends LightningElement {
+export default class boatMap extends LightningElement {
     @api
     error = undefined;
 

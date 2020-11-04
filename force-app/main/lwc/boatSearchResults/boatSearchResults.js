@@ -1,5 +1,6 @@
 import { LightningElement, wire, api, track } from 'lwc';
 import getBoats from '@salesforce/apex/BoatDataService.getBoats';
+import updateBoatList from '@salesforce/apex/BoatDataService.updateBoatList';
 import BOATMC from '@salesforce/messageChannel/BoatMessageChannel__c';
 import { MessageContext, publish } from 'lightning/messageService';
 import { updateRecord } from 'lightning/uiRecordApi';
@@ -9,7 +10,13 @@ import { refreshApex } from '@salesforce/apex';
 const LOADING_EVENT = 'loading';
 const DONE_LOADING_EVENT = 'doneloading';
 
-export default class BoatSearchResults extends LightningElement {
+const SUCCESS_TITLE = 'Success';
+const MESSAGE_SHIP_IT = 'Ship it!';
+const SUCCESS_VARIANT = 'success';
+const ERROR_TITLE = 'Error';
+const ERROR_VARIANT = 'error';
+
+export default class boatSearchResults extends LightningElement {
     @track 
     boats;
 
@@ -88,25 +95,34 @@ export default class BoatSearchResults extends LightningElement {
     // Show a toast message with the title
     // clear lightning-datatable draft values
     handleSave(event) {
-        const recordInputs = event.detail.draftValues.slice().map(draft => {
-            const fields = Object.assign({}, draft);
-            return { fields };
-        });
-        const promises = recordInputs.map(recordInput =>updateRecord(recordInput));
+        const updatedFields = event.detail.draftValues;
 
-        Promise.all(promises)
-            .then(() => {
-                this.refresh();
-                this.showToastEvent('Success', 'Ship It!', 'success');
-            })
-            .catch(error => {
-                this.error = error;
-                this.showToastEvent('Error', error.body.message, 'error');
-            })
-            .finally(() => {
-                // clear lightning-datatables draft values
-                this.draftValues = [];
+        updateBoatList({data: updatedFields})
+        .then(() => {
+            this.refresh();
+            const evt = new ShowToastEvent({
+                title: SUCCESS_TITLE,
+                message: MESSAGE_SHIP_IT,
+                variant: SUCCESS_VARIANT
             });
+            this.draftValues = [];
+            this.dispatchEvent(evt);
+            this.refresh();
+            
+        })
+        .catch(error => {
+            this.error = error;
+            const evt = new ShowToastEvent({
+                title: ERROR_TITLE,
+                message:  error.body.message,
+                variant: ERROR_VARIANT
+            });
+            this.dispatchEvent(evt);
+
+        })
+        .finally(() => {
+            this.draftValues = [];
+        });
     }
 
     // Check the current value of isLoading before dispatching the doneloading or loading custom event

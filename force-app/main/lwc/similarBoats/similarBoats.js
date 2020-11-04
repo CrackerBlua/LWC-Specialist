@@ -6,7 +6,7 @@ import {
 } from 'lwc';
 import getSimilarBoats from '@salesforce/apex/BoatDataService.getSimilarBoats';
 
-export default class SimilarBoats extends NavigationMixin(LightningElement) {
+export default class similarBoats extends NavigationMixin(LightningElement) {
     currentBoat;
     relatedBoats;
     boatId;

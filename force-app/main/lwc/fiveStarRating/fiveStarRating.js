@@ -1,9 +1,10 @@
 import { api } from "lwc";
 import fivestar from "@salesforce/resourceUrl/fivestar";
+
 import { loadStyle, loadScript } from 'lightning/platformResourceLoader';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
-const TOAST_ERROR_TITLE = 'Error loading five-star';
+const ERROR_TITLE = 'Error loading five-star';
 const ERROR_VARIANT     = 'error';
 
 const EDITABLE_CLASS    = 'c-rating';
@@ -11,7 +12,7 @@ const READ_ONLY_CLASS   = 'readonly c-rating';
 
 const CURRENT_RATING = '';
 
-export default class FiveStarRating extends LightningElement {
+export default class fiveStarRating extends LightningElement {
     @api
     readOnly;
 
@@ -27,33 +28,37 @@ export default class FiveStarRating extends LightningElement {
     }
 
     // Render callback to load the script once the component renders.
-    renderedCallback() {
-        if (this.isRendered) {
+    // Render callback to load the script once the component renders.
+        renderedCallback() {
+            if (this.isRendered) {
             return;
+            }
+            this.loadScript();
+            this.isRendered = true;
         }
-        this.loadScript();
-        this.isRendered = true;
-    }
 
     //Method to load the 3rd party script and initialize the rating.
     //call the initializeRating function after scripts are loaded
     //display a toast with error message if there is an error loading script
     loadScript() {
         Promise.all([
-            loadScript(this, fivestar + '/rating.js'),
-            loadStyle(this, fivestar + '/rating.css')
-        ]).then(response => {
-            this.initializeRating();
+          loadStyle(this, fivestar + '/rating.css'),
+          loadScript(this, fivestar + '/rating.js')
+        ]).then(() => {
+          this.initializeRating();
         }).catch(error => {
-            this.handlerErrorEvents(error.message);
+          this.dispatchEvent(new ShowToastEvent({
+            title: ERROR_TITLE,
+            variant: ERROR_VARIANT,
+            message: error.message
+          }));
         });
-
-    }
+      }
 
     // send toast with error message
     handlerErrorEvents(message) {
         const errorEvent = new ShowToastEvent({
-            title: TOAST_ERROR_TITLE,
+            title: ERROR_TITLE,
             message: message,
             variant: ERROR_VARIANT
         });

@@ -1,7 +1,7 @@
 import { LightningElement, track } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 
-export default class BoatSearch extends NavigationMixin(LightningElement) {
+export default class boatSearch extends NavigationMixin(LightningElement) {
     @track 
     isLoading = false;
     
